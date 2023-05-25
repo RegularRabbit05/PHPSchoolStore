@@ -24,7 +24,6 @@ async function uploadItem(name, desc, price, img) {
                 new swal("Error", "Unable to add your item to the store!", "error");
                 return;
             }
-            console.log(tx);
             new swal("Item added!", "Go back to the store page to see the changes!", "success");
         }
     }

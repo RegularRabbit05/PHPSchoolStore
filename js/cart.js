@@ -115,7 +115,7 @@ async function b_confirm(msg) {
         <div class="modal-body fs-6">
           <p>${msg}</p>
       </div>
-      <div class="modal-footer" style="border-top:0px">             
+      <div class="modal-footer" style="border-top: 0;">             
         <button id="modal-btn-descartar" type="button" class="btn btn-secondary">Cancel</button>
         <button id="modal-btn-aceptar" type="button" class="btn btn-primary">Accept</button>
       </div>

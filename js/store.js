@@ -39,10 +39,76 @@ function createElement(name, description, price, image, id) {
         "                            </div>\n" +
         "                            <div class=\"card-footer d-grid gap-2\">\n" +
         "                                <button id='item-"+htmlId+"' type='button' class=\"btn btn-dark\" onclick='shopElement(\"" + id + "\");'>Buy for € " + price + "</button>" +
+        ((admin) ? "<button id='a-item-"+htmlId+"' type='button' class=\"btn btn-danger\" onclick='sendItemRemovalRequest(\"" + id + "\");'>Delete item from store</button>" : "") +
         "                            </div>\n" +
         "                        </div>\n" +
         "                    </div>";
     document.getElementById("_storeContainer").insertAdjacentHTML( 'beforeend', data);
+}
+
+async function sendItemRemovalRequest(id) {
+    async function a_confirm(msg) {
+        const modalElem = document.createElement('div')
+        modalElem.id = "modal-confirm"
+        modalElem.className = "modal"
+        modalElem.innerHTML = `
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+      <div class="modal-content">             
+        <div class="modal-body fs-6">
+          <p>${msg}</p>
+      </div>
+      <div class="modal-footer" style="border-top: 0;">             
+        <button id="modal-btn-descartar" type="button" class="btn btn-secondary">Cancel</button>
+        <button id="modal-btn-aceptar" type="button" class="btn btn-primary">Accept</button>
+      </div>
+    </div>
+  </div>
+  `
+        const myModal = new bootstrap.Modal(modalElem, {
+            keyboard: false,
+            backdrop: 'static'
+        })
+        myModal.show()
+
+        return new Promise((resolve, reject) => {
+            document.body.addEventListener('click', response)
+
+            function response(e) {
+                let bool = false
+                if (e.target.id == 'modal-btn-descartar') bool = false
+                else if (e.target.id == 'modal-btn-aceptar') bool = true
+                else return
+
+                document.body.removeEventListener('click', response)
+                document.body.querySelector('.modal-backdrop').remove()
+                modalElem.remove()
+                resolve(bool)
+            }
+        })
+    }
+    const res = await a_confirm("Do you want to delete this item from the store?");
+    if (res) {
+        async function removeItem(id) {
+            let xhttp = new XMLHttpRequest();
+            xhttp.open("POST", window.location.origin+"/api/remove", true);
+            xhttp.send(JSON.stringify({
+                email:usr,
+                password:pwd,
+                id:id,
+            }));
+
+            xhttp.onreadystatechange = () => {
+                if (xhttp.readyState === 4) {
+                    const tx = xhttp.responseText;
+                    if (tx.toLocaleLowerCase() == "no") {
+                        alert("Error");
+                    }
+                    window.location.reload();
+                }
+            }
+        }
+        await removeItem(id);
+    }
 }
 
 function shopElement(id) {

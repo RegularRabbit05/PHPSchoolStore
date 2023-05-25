@@ -98,8 +98,16 @@ function setupCheckoutPage() {
         appendItemToListPopup(i.Name, i.Price);
         price+=i.Price;
     }
-    document.getElementById("checkoutListPrice").innerText = "€ " + price.toFixed(2).toString();
-    document.getElementById("autoScrollBottom").scrollIntoView();
+    const th = 1000;
+    const checkPrice = document.getElementById("checkoutListPrice");
+    checkPrice.innerText = "€ " + price.toFixed(2).toString();
+    setTimeout(() => document.getElementById("autoScrollBottom").scrollIntoView(), 5);
+    if (price >= th) {
+        setTimeout(() => new swal("You spent more than € "+th.toString(), "The shipping fees are on us!", "info"), 1000);
+    } else {
+        const shipping = (price/50).toFixed(2);
+        checkPrice.innerHTML += " base + € " + shipping.toString() + " shipping = <b><u>€ " + (price/50 + price).toFixed(2).toString() + '</u></b>';
+    }
 }
 
 function appendItemToListPopup(name, price) {
@@ -108,4 +116,26 @@ function appendItemToListPopup(name, price) {
         '                                <p class="item-name">'+name+'</p>\n' +
         '                            </div>';
     document.getElementById("checkoutListItems").insertAdjacentHTML("beforeend", html);
+}
+
+async function toPdf() {
+    if (sessionStorage.getItem("pdfS") === "ok") {
+        sessionStorage.removeItem("pdfS");
+        window.close();
+    }
+    const queryString = window.location.search;
+    const param = new URLSearchParams(queryString);
+    const isPdf = param.get("pdf");
+    if (isPdf === "yes") {
+        sessionStorage.setItem("pdfS", "ok");
+        const element = document.getElementById('pdf-export');
+        html2pdf(element);
+        setTimeout(() => location.reload(), 500);
+    } else {
+        console.log("OK");
+        document.getElementById("downloadPDF").style.display = "block";
+        document.getElementById("card-details-form").style.display = "block";
+        document.getElementById("title-bar").style.display = "block";
+        document.getElementById("title-bar").innerText = "Payment";
+    }
 }
