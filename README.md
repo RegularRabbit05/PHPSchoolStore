@@ -10,5 +10,8 @@ The available api calls (POST) are:<br>
  - /api/ping.php<br>
  - /api/register.php<br>
  - /api/storePage.php<br>
+ - /api/remove.php<br>
+ - /api/science.php <<- extra<br>
+
 <br>
 All the api calls require a user and password field.<br>
